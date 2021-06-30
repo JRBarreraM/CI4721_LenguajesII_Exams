@@ -3,6 +3,7 @@ import sys
 ruleList = {}
 precedence = {}
 terminals = set()
+phraseSize = 0
 precendeString = {'>' : 'mayor', '<' : 'menor', '=' : 'igual'}
 initSymbol = ""
 egraph = {}
@@ -69,7 +70,31 @@ def checkConsecutiveComparables(phrase):
             print("ERROR: No precedence set for "+ phrase[i])
     return True
 
+def showParseStep(stack, phrase, indexPhrase, action, rule=None):
+    global phraseSize
+    spaceCount = phraseSize + 2 - len(stack)
+    spaceWCount = phraseSize + 2 - len(phrase)
+
+    left = " "*phraseSize
+    left =  left[(indexPhrase+len(phrase[:indexPhrase])-1):] + " ".join(phrase[:indexPhrase])
+    right = " "*phraseSize
+    right =  " ".join(phrase[indexPhrase:]) + right[:(indexPhrase+len(phrase[:indexPhrase])-1)]
+
+    print(" ".join(stack) + "  ", end="")
+    print("  "*spaceCount, end="")
+    print(left + " \033[92m.\033[0m " + right, end="")
+    print("  "*spaceWCount, end="")
+    if (rule != None):
+        print(action + ": " + ruleList[rule] + " -> " + " ".join(rule))
+    else:
+        print(action)
+
 def parser(phrase):
+
+    global phraseSize
+    phraseSize = len(phrase)
+    print("\nStack" + "  "*(phraseSize) + "Input" + " "*(phraseSize*3) + "Action\n")
+
     stack = ["$"]
     indexPhrase = 1
     e = phrase[indexPhrase]
@@ -83,21 +108,19 @@ def parser(phrase):
 
         if p == '$' and e == '$':
             if (stack == ["$", initSymbol]):
-                print(str(stack)+" | "+phrase[indexPhrase]+"| accept")
+                showParseStep(stack, phrase, indexPhrase, "accept")
                 return True
             elif "".join(stack[1:]) not in ruleList:
-                print(str(stack)+" | "+phrase+"| reject")
+                showParseStep(stack, phrase, indexPhrase, "reject")
                 return False
             else:
                 rule = "".join(stack[1:])
                 stack = [stack[0]] + [ruleList[rule]]
-                print(str(stack)+" | "+phrase+"| reduce "+ ruleList[rule] + " -> " + "".join(rule))
-                print()
+                showParseStep(stack, phrase, indexPhrase, "reduce", "".join(rule))
                 continue
 
         if f[p] <= g[e]:
-            print(str(stack)+" | "+phrase+"| read")
-            print()
+            showParseStep(stack, phrase, indexPhrase, "read")
             stack.append(e)
             indexPhrase += 1
             e = phrase[indexPhrase]
@@ -117,8 +140,7 @@ def parser(phrase):
 
             if rule in ruleList:
                 stack.append(ruleList[rule])
-                print(str(stack)+" | "+phrase+"| reduce: "+ ruleList[rule] + " -> " + "".join(rule))
-                print()
+                showParseStep(stack, phrase, indexPhrase, "reduce", "".join(rule))
                 phrase = phrase[:indexPhrase-erase] + phrase[indexPhrase:]
                 indexPhrase = indexPhrase - erase
             else:
@@ -220,14 +242,14 @@ def parse_func(uinput):
             if phraseInTerminals(phrase):
                 phrase = "$" + phrase + "$"
                 if checkConsecutiveComparables(phrase):
-                    parser(phrase)
+                    return parser(phrase)
         else:
             print("ERROR: no initial symbol declared")
     else:
         print("ERROR: no syntax analyzer found")
 
 def tester():
-    print("TEST 1")
+    print("\nTEST 1\n")
     funcCaller("INIT E")
     funcCaller("RULE E E + E")
     funcCaller("RULE E n")
@@ -240,9 +262,10 @@ def tester():
     funcCaller("PREC $ < +")
     funcCaller("BUILD")
     funcCaller("PARSE n+n")
+
     resetAll()
 
-    print("TEST 2")
+    print("\nTEST 2\n")
     funcCaller("PREC t = c ")
     funcCaller("PREC t < ;")
     funcCaller("PREC t < t ")
@@ -282,6 +305,7 @@ def tester():
     funcCaller("BUILD")
     funcCaller("PARSE i ; t i c i ; t i c i f i ; i")
     funcCaller("EXIT")
+
     resetAll()
 
 def funcCaller(rawInput):
@@ -306,7 +330,7 @@ def funcCaller(rawInput):
 
     elif uinput[0] == "EXIT":
         print("Bye")
-
+        sys.exit()
     else:
         print("Input not recognized try again")
 
@@ -327,31 +351,41 @@ def resetAll():
     global g
     g = {}
 
-#hora de probar
-tester()
+import sys
 
-while (True):
-    uinput = input("Enter an action: ").split()
-    if len(uinput) == 0:
-        print("Bad syntax, expected PREC <terminal> >/</= <terminal>")
-
-    if uinput[0] == "RULE":
-        rule_func(uinput)
-    
-    elif uinput[0] == "INIT":
-        init_func(uinput)
-
-    elif uinput[0] == "PREC":
-        prec_func(uinput)
-
-    elif uinput[0] == "BUILD":
-        build_func()
-
-    elif uinput[0] == "PARSE":
-        parse_func(uinput)
-
-    elif uinput[0] == "EXIT":
-        break
-
+def main(argv):
+    if len(argv) == 1:
+        if argv[1] == "-test":
+            tester()
+        else:
+            print("ERROR: Expected -test")
     else:
-        print("Input not recognized try again")
+        while (True):
+            uinput = input("$> ").split()
+            if len(uinput) == 0:
+                print("Bad syntax, expected PREC <terminal> >/</= <terminal>")
+
+            if uinput[0] == "RULE":
+                rule_func(uinput)
+            
+            elif uinput[0] == "INIT":
+                init_func(uinput)
+
+            elif uinput[0] == "PREC":
+                prec_func(uinput)
+
+            elif uinput[0] == "BUILD":
+                build_func()
+
+            elif uinput[0] == "PARSE":
+                parse_func(uinput)
+
+            elif uinput[0] == "EXIT":
+                print("Bye")
+                break
+
+            else:
+                print("Input not recognized try again")
+
+if __name__ == "__main__":
+   main(sys.argv[1:])
