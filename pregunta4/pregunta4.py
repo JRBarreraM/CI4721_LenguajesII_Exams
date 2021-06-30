@@ -351,8 +351,6 @@ def resetAll():
     global g
     g = {}
 
-import sys
-
 def main(argv):
     if len(argv) == 1:
         if argv[1] == "-test":
