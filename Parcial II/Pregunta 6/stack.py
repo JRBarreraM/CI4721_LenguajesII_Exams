@@ -18,9 +18,9 @@ class Stack:
 
     def arith_bin_op(self, op):
         if (len(self.stack) < 2):
-            print("No hay suficientes elementos en la pila")
+            print("ERROR: No hay suficientes elementos en la pila")
         elif (type(self.stack[-1]) is not int or type(self.stack[-2]) is not int):
-            print("valores en pila no son enteros")
+            print("ERROR: Valores en pila no son enteros")
         else:
             rop = self.stack.pop()
             lop = self.stack.pop()
@@ -65,9 +65,9 @@ class Stack:
         if (len(self.stack) < 2):
             print("ERROR: No hay suficientes elementos en la pila")
         elif (type(self.stack[-1]) is int or type(self.stack[-1]) is bool or len(self.stack[-1].split()) != 2):
-            print("ERROR: El valor en el tope de la pila no es un l-value")
+            print("ERROR: El valor en el tope de la pila no es un Lvalue")
         elif (type(self.stack[-2]) is not int and type(self.stack[-2]) is not bool and len(self.stack[-2].split()) == 2):
-            print("ERROR: No se le puede asignar un l-value a un l-value")
+            print("ERROR: No se le puede asignar un Lvalue a un Lvalue")
         else:
             lval = self.stack.pop().split()[1]
             self.ids[lval] = self.stack.pop()
@@ -104,7 +104,7 @@ class Stack:
         self.pointer += 1
 
     def read(self, id):
-        v = input(f'Introduzca valor de \"{id}\": ')
+        v = input(f'Introduzca el valor de \"{id}\": ')
         if (v == "true" or v == "false"):
             self.ids[id] = eval(v.capitalize())
         else:
