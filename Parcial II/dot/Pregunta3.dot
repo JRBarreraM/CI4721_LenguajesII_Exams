@@ -1,0 +1,30 @@
+graph {
+    plus1 [label="E1 + E2 (INT)"];
+    question1 [label="E1 ?: E2 (INT)"];
+    question2 [label="E1 ?: E2 (INT)"];
+    question3 [label="E1 ?: E2 (TYPE_ERROR)"];
+    exclamation1 [label="E1 !! (INT)"];
+    and [label="E1 ^ E2 (TYPE_ERROR)"]; 
+    minus [label="E1 < E2 (INT)"]; 
+    7 [label="7 (INT)"];
+    null1 [label="null (NULL)"];
+    null2 [label="null (NULL)"];
+    null3 [label="null (NULL)"];
+    42 [label="42 (INT)"];
+    69 [label="69 (INT)"];
+    true [label="true (BOOL)"];
+
+	question1 -- null1;
+	question1 -- 42;
+    exclamation1 -- 69;
+    plus1 -- question1;
+    plus1 -- exclamation1
+    question2 -- 7;
+    question2 -- null2;
+    minus -- plus1;
+    minus -- question2;
+    and -- minus;
+    and -- null3;
+    question3 -- and;
+    question3 -- true;
+}
