@@ -16,11 +16,11 @@ PUSH 0
 LVALUE i
 ASSIGN
 
-Loop:
+loop:
 RVALUE i
 PUSH 10
 LT
-GOFALSE Out
+GOFALSE out
 
 RVALUE i
 RVALUE i
@@ -37,28 +37,29 @@ PUSH 1
 ADD
 LVALUE i
 ASSIGN
-GOTO Loop
+GOTO loop
 
-Out:
+out:
 ```
+
 ### B
 
 ```
-S := 0
-I := 0
+s := 0
+i := 0
 
-Loop:
-If I >= 10 goto Out
+loop:
+If i >= 10 GOTO out
 
-T1 := I * I
+T1 := i * i
 T2 := T1 / 2
 T3 := s + T2
-S := T3
-T4 := I + 1
-I = T4
+s  := T3
+T4 := i + 1
+i  := T4
 
-Goto loop
-Out:
+GOTO loop
+out:
 ```
 
 ## Pregunta 3
@@ -79,7 +80,6 @@ E   → E1 + E2   { E.type ← if(E1.type == int ∧ E2.type == int) then int el
 
 ### B
 ![alt text](img/Pregunta3.png)
-
 
 ### C
 ```
